@@ -1,0 +1,14 @@
+name: Download artifact
+on:
+  push:
+    branches: [ main ]
+jobs:
+  Download:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: dawidd6/action-download-artifact@v2
+      with:
+        repo: wilsonianb/upload-artifact
+        github_token: ${{secrets.UPLOAD_ACTION_TOKEN}}
+        run_id: 4625068261
+        name: license
