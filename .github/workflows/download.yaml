@@ -8,11 +8,43 @@ on:
 jobs:
   Download:
     runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+      pull-requests: write
     steps:
+    - uses: actions/checkout@v3
     - uses: dawidd6/action-download-artifact@v2
       with:
         repo: wilsonianb/upload-artifact
         github_token: ${{secrets.UPLOAD_ACTION_TOKEN}}
-        # run_id: ${{ github.event.inputs.run_id }}
         run_id: ${{ inputs.run_id }}
-        name: license
+        name: artifact
+
+    - uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: "[Bot] Update db.sql"
+        push_options: "--force"
+        branch: bot/update-db-sql
+        create_branch: true
+
+    - name: Open PR with updated changes
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const listOfPRs = await github.rest.pulls.list({
+            owner: '${{ github.repository_owner }}',
+            repo: '${{ github.event.repository.name }}',
+            head: '${{ github.repository_owner }}:bot/update-db-sql',
+            state: 'open'
+          });
+          if (listOfPRs.data.length === 0) {
+            await github.rest.pulls.create({
+              owner: '${{ github.repository_owner }}',
+              repo: '${{ github.event.repository.name }}',
+              title: 'Update db.sql',
+              head: 'bot/update-db-sql',
+              base: 'main'
+            });
+          }
