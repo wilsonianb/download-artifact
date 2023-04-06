@@ -1,7 +1,10 @@
 name: Download artifact
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        required: true
+        type: number
 jobs:
   Download:
     runs-on: ubuntu-latest
@@ -10,5 +13,6 @@ jobs:
       with:
         repo: wilsonianb/upload-artifact
         github_token: ${{secrets.UPLOAD_ACTION_TOKEN}}
-        run_id: 4625068261
+        # run_id: ${{ github.event.inputs.run_id }}
+        run_id: ${{ inputs.run_id }}
         name: license
