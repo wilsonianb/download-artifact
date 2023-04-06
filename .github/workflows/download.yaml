@@ -22,29 +22,38 @@ jobs:
         run_id: ${{ inputs.run_id }}
         name: artifact
 
-    - uses: stefanzweifel/git-auto-commit-action@v4
+    - name: Create Pull Request
+      uses: peter-evans/create-pull-request@v5
       with:
-        commit_message: "[Bot] Update db.sql"
-        push_options: "--force"
+        commit-message: "[Bot] Update db.sql"
         branch: bot/update-db-sql
-        create_branch: true
 
-    - name: Open PR with updated changes
-      uses: actions/github-script@v5
-      with:
-        script: |
-          const listOfPRs = await github.rest.pulls.list({
-            owner: '${{ github.repository_owner }}',
-            repo: '${{ github.event.repository.name }}',
-            head: '${{ github.repository_owner }}:bot/update-db-sql',
-            state: 'open'
-          });
-          if (listOfPRs.data.length === 0) {
-            await github.rest.pulls.create({
-              owner: '${{ github.repository_owner }}',
-              repo: '${{ github.event.repository.name }}',
-              title: 'Update db.sql',
-              head: 'bot/update-db-sql',
-              base: 'main'
-            });
-          }
+
+
+    # - uses: stefanzweifel/git-auto-commit-action@v4
+    #   with:
+    #     commit_message: "[Bot] Update db.sql"
+    #     push_options: "--force"
+    #     branch: bot/update-db-sql
+    #     create_branch: true
+
+    # - name: Open PR with updated changes
+    #   uses: actions/github-script@v5
+    #   with:
+    #     github-token: ${{ secrets.DOWNLOAD_WORKFLOW_TOKEN }}
+    #     script: |
+    #       const listOfPRs = await github.rest.pulls.list({
+    #         owner: '${{ github.repository_owner }}',
+    #         repo: '${{ github.event.repository.name }}',
+    #         head: '${{ github.repository_owner }}:bot/update-db-sql',
+    #         state: 'open'
+    #       });
+    #       if (listOfPRs.data.length === 0) {
+    #         await github.rest.pulls.create({
+    #           owner: '${{ github.repository_owner }}',
+    #           repo: '${{ github.event.repository.name }}',
+    #           title: 'Update db.sql',
+    #           head: 'bot/update-db-sql',
+    #           base: 'main'
+    #         });
+    #       }
